@@ -2,8 +2,8 @@
 <html lang="en">
 
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>To-Do List</title>
 
     <style>
@@ -20,22 +20,22 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            background: linear-gradient(135deg, #FFF2F2, #FFF2F2);
+            background: linear-gradient(135deg, #fff2f2, #fff2f2);
         }
 
         .card {
-            border: 2px solid #2D336B;
+            border: 2px solid #2d336b;
             width: 30vw;
             min-width: 300px;
             padding: 1rem;
             border-radius: 10px;
-            background-color: #A9B5DF;
+            background-color: #a9b5df;
             text-align: center;
         }
 
         h1 {
             font-size: 1.8rem;
-            color: #2D336B;
+            color: #2d336b;
             margin-bottom: 1rem;
         }
 
@@ -43,7 +43,7 @@
             display: flex;
             justify-content: center;
             align-items: center;
-            border-bottom: 1px solid #2D336B;
+            border-bottom: 1px solid #2d336b;
             padding-bottom: 1rem;
             gap: 10px;
         }
@@ -52,9 +52,9 @@
             flex: 1;
             height: 2.5rem;
             padding: 0.5rem;
-            border: 2px solid #2D336B;
+            border: 2px solid #2d336b;
             border-radius: 5px;
-            color: #2D336B;
+            color: #2d336b;
             font-size: 1rem;
             outline: none;
         }
@@ -62,7 +62,7 @@
         input:disabled {
             background: transparent;
             border: none;
-            color: #2D336B;
+            color: #2d336b;
             cursor: not-allowed;
         }
 
@@ -71,14 +71,14 @@
             padding: 0 1rem;
             border: none;
             border-radius: 5px;
-            background-color: #2D336B;
+            background-color: #2d336b;
             color: white;
             font-size: 1rem;
             cursor: pointer;
         }
 
         button:hover {
-            background-color: #1E254F;
+            background-color: #1e254f;
         }
 
         .content {
@@ -107,8 +107,8 @@
             <h1>To-Do List</h1>
 
             <div class="controls">
-                <input type="text" id="taskInput" placeholder="Add a new task">
-                <button onclick="addTask()">Add</button>
+                <input type="text" id="taskInput" placeholder="Add a new task" />
+                <button id="addButton" onclick="addButtonFunction">Add</button>
             </div>
 
             <div id="taskList">
@@ -118,40 +118,73 @@
     </div>
 
     <script>
-        function addTask() {
-            let taskInput = document.getElementById("taskInput");
-            let taskText = taskInput.value.trim();
+        const textbox = document.querySelector("#taskInput");
+        const addButton = document.querySelector("#addButton");
+        const taskList = document.querySelector("#taskList"); // Fixed query selector
 
-            let taskArray = []
-            if (taskText === "") {
-                alert("Please enter a task!");
-                return;
-            } else {
-                taskArray.push(taskText);
-            }
+        // Load existing events from localStorage
+        let eventsArray = JSON.parse(localStorage.getItem("eventsArray")) || [];
 
-            let taskList = document.getElementById("taskList");
+        // Function to display events on page load
+        function loadEvent() {
+            taskList.innerHTML = ""; // Clear existing content to avoid duplication
 
-            let taskDiv = document.createElement("div");
-            taskDiv.classList.add("content");
+            eventsArray.forEach(event => { // ✅ Use eventsArray instead of storedEvents
+                addEventToDOM(event);
+            });
+        }
 
-            let taskInputElement = document.createElement("input");
-            taskInputElement.type = "text";
-            taskInputElement.value = taskText;
-            taskInputElement.disabled = true;
+        // Function to add a single event to the DOM
+        function addEventToDOM(event) {
+            const contentDiv = document.createElement("div");
+            const contentP = document.createElement("p");
+            const contentbutton = document.createElement("button");
 
-            let removeButton = document.createElement("button");
-            removeButton.innerText = "Remove";
-            removeButton.onclick = function () {
-                taskDiv.remove();
+            contentDiv.classList.add("content");
+            contentP.classList.add("p");
+            contentP.innerText = event.eventName;
+
+            contentbutton.classList.add("remove");
+            contentbutton.innerText = "Remove";
+
+            contentbutton.addEventListener("click", () => {
+                eventsArray = eventsArray.filter(e => e.id !== event.id);
+                localStorage.setItem("eventsArray", JSON.stringify(eventsArray));
+                contentDiv.remove();
+            });
+
+            contentDiv.addEventListener("click", () => {
+                contentbutton.style.textDecoration = "line-through";
+                contentP.style.textDecoration = "line-through";
+                contentbutton.style.opacity = 0.5;
+                contentP.style.opacity = 0.5;
+
+            });
+
+            contentDiv.appendChild(contentP);
+            contentDiv.appendChild(contentbutton);
+            taskList.appendChild(contentDiv);
+        }
+
+        addButton.addEventListener("click", () => {
+            if (textbox.value.trim() === "") return;
+
+            let event = {
+                id: new Date().toISOString(),
+                eventName: textbox.value,
+                status: ""
             };
 
-            taskDiv.appendChild(taskInputElement);
-            taskDiv.appendChild(removeButton);
-            taskList.appendChild(taskDiv);
+            eventsArray.push(event);
+            localStorage.setItem("eventsArray", JSON.stringify(eventsArray));
+            addEventToDOM(event);
 
-            taskInput.value = "";
-        }
+            textbox.value = "";
+        });
+
+        loadEvent();
+
+
     </script>
 </body>
 
