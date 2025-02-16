@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>To-Do List</title>
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: Arial, sans-serif;
+        }
+
+        .container {
+            width: 100vw;
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, #FFF2F2, #FFF2F2);
+        }
+
+        .card {
+            border: 2px solid #2D336B;
+            width: 30vw;
+            min-width: 300px;
+            padding: 1rem;
+            border-radius: 10px;
+            background-color: #A9B5DF;
+            text-align: center;
+        }
+
+        h1 {
+            font-size: 1.8rem;
+            color: #2D336B;
+            margin-bottom: 1rem;
+        }
+
+        .controls {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            border-bottom: 1px solid #2D336B;
+            padding-bottom: 1rem;
+            gap: 10px;
+        }
+
+        input {
+            flex: 1;
+            height: 2.5rem;
+            padding: 0.5rem;
+            border: 2px solid #2D336B;
+            border-radius: 5px;
+            color: #2D336B;
+            font-size: 1rem;
+            outline: none;
+        }
+
+        input:disabled {
+            background: transparent;
+            border: none;
+            color: #2D336B;
+            cursor: not-allowed;
+        }
+
+        button {
+            height: 2.5rem;
+            padding: 0 1rem;
+            border: none;
+            border-radius: 5px;
+            background-color: #2D336B;
+            color: white;
+            font-size: 1rem;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #1E254F;
+        }
+
+        .content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 1rem;
+            padding: 0.5rem;
+            background: rgba(255, 255, 255, 0.6);
+            border-radius: 5px;
+        }
+
+        .content button {
+            background-color: red;
+        }
+
+        .content button:hover {
+            background-color: darkred;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <div class="card">
+            <h1>To-Do List</h1>
+
+            <div class="controls">
+                <input type="text" id="taskInput" placeholder="Add a new task">
+                <button onclick="addTask()">Add</button>
+            </div>
+
+            <div id="taskList">
+                <!-- Tasks will be added here dynamically -->
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function addTask() {
+            let taskInput = document.getElementById("taskInput");
+            let taskText = taskInput.value.trim();
+
+            let taskArray = []
+            if (taskText === "") {
+                alert("Please enter a task!");
+                return;
+            } else {
+                taskArray.push(taskText);
+            }
+
+            let taskList = document.getElementById("taskList");
+
+            let taskDiv = document.createElement("div");
+            taskDiv.classList.add("content");
+
+            let taskInputElement = document.createElement("input");
+            taskInputElement.type = "text";
+            taskInputElement.value = taskText;
+            taskInputElement.disabled = true;
+
+            let removeButton = document.createElement("button");
+            removeButton.innerText = "Remove";
+            removeButton.onclick = function () {
+                taskDiv.remove();
+            };
+
+            taskDiv.appendChild(taskInputElement);
+            taskDiv.appendChild(removeButton);
+            taskList.appendChild(taskDiv);
+
+            taskInput.value = "";
+        }
+    </script>
+</body>
+
+</html>
