@@ -59,13 +59,6 @@
             outline: none;
         }
 
-        input:disabled {
-            background: transparent;
-            border: none;
-            color: #2d336b;
-            cursor: not-allowed;
-        }
-
         button {
             height: 2.5rem;
             padding: 0 1rem;
@@ -98,6 +91,11 @@
         .content button:hover {
             background-color: darkred;
         }
+
+        .done {
+            text-decoration: line-through;
+            opacity: 0.5;
+        }
     </style>
 </head>
 
@@ -108,11 +106,12 @@
 
             <div class="controls">
                 <input type="text" id="taskInput" placeholder="Add a new task" />
-                <button id="addButton" onclick="addButtonFunction">Add</button>
+                <button id="addButton">Add</button>
             </div>
 
             <div id="taskList">
-                <!-- Tasks will be added here dynamically -->
+                <!-- javascript code comes here -->
+
             </div>
         </div>
     </div>
@@ -120,49 +119,49 @@
     <script>
         const textbox = document.querySelector("#taskInput");
         const addButton = document.querySelector("#addButton");
-        const taskList = document.querySelector("#taskList"); // Fixed query selector
+        const taskList = document.querySelector("#taskList");
 
-        // Load existing events from localStorage
         let eventsArray = JSON.parse(localStorage.getItem("eventsArray")) || [];
 
-        // Function to display events on page load
-        function loadEvent() {
-            taskList.innerHTML = ""; // Clear existing content to avoid duplication
-
-            eventsArray.forEach(event => { // ✅ Use eventsArray instead of storedEvents
+        function loadEvents() {
+            taskList.innerHTML = "";
+            eventsArray.forEach(event => {
                 addEventToDOM(event);
             });
         }
 
-        // Function to add a single event to the DOM
         function addEventToDOM(event) {
             const contentDiv = document.createElement("div");
             const contentP = document.createElement("p");
-            const contentbutton = document.createElement("button");
+            const contentButton = document.createElement("button");
 
             contentDiv.classList.add("content");
-            contentP.classList.add("p");
             contentP.innerText = event.eventName;
 
-            contentbutton.classList.add("remove");
-            contentbutton.innerText = "Remove";
+            contentButton.classList.add("remove");
+            contentButton.innerText = "Remove";
 
-            contentbutton.addEventListener("click", () => {
+            if (event.status === "done") {
+                contentP.classList.add("done");
+                contentButton.classList.add("done");
+            }
+
+            contentButton.addEventListener("click", () => {
                 eventsArray = eventsArray.filter(e => e.id !== event.id);
                 localStorage.setItem("eventsArray", JSON.stringify(eventsArray));
                 contentDiv.remove();
             });
 
             contentDiv.addEventListener("click", () => {
-                contentbutton.style.textDecoration = "line-through";
-                contentP.style.textDecoration = "line-through";
-                contentbutton.style.opacity = 0.5;
-                contentP.style.opacity = 0.5;
+                event.status = event.status === "done" ? "" : "done";
+                localStorage.setItem("eventsArray", JSON.stringify(eventsArray));
 
+                contentP.classList.toggle("done");
+                contentButton.classList.toggle("done");
             });
 
             contentDiv.appendChild(contentP);
-            contentDiv.appendChild(contentbutton);
+            contentDiv.appendChild(contentButton);
             taskList.appendChild(contentDiv);
         }
 
@@ -182,9 +181,7 @@
             textbox.value = "";
         });
 
-        loadEvent();
-
-
+        loadEvents();
     </script>
 </body>
 
